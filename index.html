@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>生成AI実務入門 — Skills / MCP / ハーネス</title>
+<style>
+  :root{
+    --bg:#F7F5F0;
+    --ink:#1C1C1A;
+    --clay:#8B6F47;
+    --pine:#3D5A4C;
+    --seal:#B0392F;
+    --line:#D9D4C7;
+    --paper:#FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .deck{
+    max-width:880px;
+    margin:0 auto;
+    padding:24px 20px 80px;
+  }
+  .deck-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    border-bottom:1px solid var(--line);
+    padding-bottom:14px;
+    margin-bottom:28px;
+  }
+  .deck-header .title{
+    font-size:14px;
+    letter-spacing:.08em;
+    color:var(--clay);
+    font-weight:700;
+  }
+  .deck-header .clock{
+    font-size:13px;
+    color:var(--ink);
+    opacity:.55;
+  }
+  .progress-track{
+    height:3px;
+    background:var(--line);
+    border-radius:2px;
+    margin-bottom:36px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--pine);
+    width:11.1%;
+    transition:width .4s ease;
+  }
+  .slide{
+    display:none;
+    animation:fade .35s ease;
+  }
+  .slide.active{display:block;}
+  @keyframes fade{
+    from{opacity:0; transform:translateY(6px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  .num{
+    font-size:13px;
+    color:var(--seal);
+    font-weight:700;
+    letter-spacing:.05em;
+    margin-bottom:8px;
+  }
+  .time-badge{
+    display:inline-block;
+    font-size:12px;
+    color:var(--pine);
+    border:1px solid var(--pine);
+    border-radius:20px;
+    padding:2px 12px;
+    margin-bottom:18px;
+  }
+  h1{
+    font-size:30px;
+    line-height:1.4;
+    margin:0 0 18px;
+    font-weight:700;
+  }
+  h2{
+    font-size:20px;
+    margin:28px 0 12px;
+    font-weight:700;
+    color:var(--pine);
+  }
+  p{
+    font-size:16px;
+    line-height:1.85;
+    margin:0 0 14px;
+  }
+  .lede{
+    font-size:18px;
+    line-height:1.8;
+    color:var(--ink);
+    border-left:3px solid var(--clay);
+    padding-left:16px;
+    margin-bottom:24px;
+  }
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:20px 22px;
+    margin-bottom:16px;
+  }
+  .card .label{
+    font-size:12px;
+    color:var(--clay);
+    font-weight:700;
+    letter-spacing:.05em;
+    margin-bottom:6px;
+  }
+  .card p{margin:0;}
+  .compare{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:12px;
+    margin:20px 0;
+  }
+  .compare .col{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:16px;
+  }
+  .compare .col .tag{
+    font-size:12px;
+    font-weight:700;
+    color:var(--paper);
+    background:var(--pine);
+    border-radius:4px;
+    padding:3px 8px;
+    display:inline-block;
+    margin-bottom:10px;
+  }
+  .compare .col p{
+    font-size:14px;
+    line-height:1.7;
+    margin:0;
+  }
+  .flow{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:24px 0;
+    flex-wrap:wrap;
+  }
+  .flow .box{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:14px 16px;
+    font-size:14px;
+    font-weight:700;
+    flex:1;
+    min-width:120px;
+    text-align:center;
+  }
+  .flow .arrow{
+    color:var(--clay);
+    font-size:18px;
+  }
+  ul{
+    padding-left:0;
+    margin:0 0 16px;
+    list-style:none;
+  }
+  li{
+    font-size:15.5px;
+    line-height:1.8;
+    padding-left:22px;
+    position:relative;
+    margin-bottom:10px;
+  }
+  li::before{
+    content:"—";
+    position:absolute;
+    left:0;
+    color:var(--clay);
+  }
+  .grid-list{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    margin:18px 0;
+  }
+  .grid-list .item{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:14px 16px;
+  }
+  .grid-list .item .h{
+    font-size:14px;
+    font-weight:700;
+    color:var(--pine);
+    margin-bottom:4px;
+  }
+  .grid-list .item .d{
+    font-size:13.5px;
+    line-height:1.6;
+    opacity:.85;
+  }
+  .footer-note{
+    font-size:12.5px;
+    color:var(--ink);
+    opacity:.55;
+    margin-top:24px;
+    line-height:1.6;
+  }
+  .nav{
+    position:fixed;
+    bottom:0;left:0;right:0;
+    background:var(--paper);
+    border-top:1px solid var(--line);
+    padding:14px 20px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:18px;
+  }
+  .nav button{
+    background:var(--pine);
+    color:var(--paper);
+    border:none;
+    border-radius:6px;
+    padding:10px 22px;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .nav button:disabled{
+    background:var(--line);
+    color:var(--ink);
+    opacity:.5;
+    cursor:default;
+  }
+  .nav .counter{
+    font-size:13px;
+    color:var(--ink);
+    opacity:.6;
+    min-width:50px;
+    text-align:center;
+  }
+  .signature{
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    margin:30px 0 10px;
+  }
+  .signature span{
+    width:6px;height:6px;
+    border-radius:50%;
+    background:var(--line);
+  }
+  .signature span.done{background:var(--pine);}
+  @media (max-width:600px){
+    .compare{grid-template-columns:1fr;}
+    .grid-list{grid-template-columns:1fr;}
+    h1{font-size:24px;}
+    .flow{flex-direction:column;}
+    .flow .arrow{transform:rotate(90deg);}
+  }
+</style>
+</head>
+<body>
+
+<div class="deck">
+  <div class="deck-header">
+    <div class="title">生成AI実務入門 — 15分講義</div>
+    <div class="clock" id="clockLabel">01 / 09</div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+  <!-- 1 -->
+  <section class="slide active" data-time="1分">
+    <div class="num">01</div>
+    <div class="time-badge">1分</div>
+    <h1>Skills・MCP・ハーネスを、<br>15分で地図にする</h1>
+    <p class="lede">ClaudeとChatGPT、どちらを使っていても出てくる5つの実務トピックも合わせて扱う。今日のゴールは「言葉を聞いたときに、自分がどれを使うべきか判断できる」状態にすること。</p>
+    <div class="card">
+      <div class="label">今日話す9項目</div>
+      <p>Skills / MCP / ハーネス / プロンプトの基本原則 / チャットの構造化機能 / メモリ機能 / エージェント的機能の使い分け / コスト構造の理解</p>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="slide" data-time="3分">
+    <div class="num">02</div>
+    <div class="time-badge">3分</div>
+    <h1>Skills（スキル）</h1>
+    <p class="lede">AIに「特定の作業のやり方」を覚えさせておくファイル一式。Markdownの指示書に、必要ならスクリプトや参考資料を添えて1つのフォルダにまとめる。</p>
+
+    <h2>プロンプトとの違い</h2>
+    <p>プロンプトは会話のたびに書く単発の指示。Skillsは一度作れば、Claudeが必要なタイミングで自動的に読み込んで使う。毎回同じ説明を書く手間がなくなる。</p>
+
+    <h2>仕組みの要点</h2>
+    <ul>
+      <li>最初から全部読み込むのではなく、必要になったときだけ詳細を読み込む（段階的開示）</li>
+      <li>Claude.ai、Claude Code、APIなど環境をまたいで同じフォルダが使える</li>
+      <li>ChatGPTにも「カスタムGPT」やプロジェクト機能という近い仕組みがある</li>
+    </ul>
+    <div class="footer-note">参考：Anthropic公式ドキュメント「Agent Skills」</div>
+  </section>
+
+  <!-- 3 -->
+  <section class="slide" data-time="3分">
+    <div class="num">03</div>
+    <div class="time-badge">3分</div>
+    <h1>MCP（Model Context Protocol）</h1>
+    <p class="lede">AIが外部のサービスやデータに接続するための、共通の規格。Google Drive、Slack、GitHubなどと繋ぐ「共通コンセント」にあたる。</p>
+
+    <div class="flow">
+      <div class="box">AI（Claude / ChatGPT）</div>
+      <div class="arrow">⇄</div>
+      <div class="box">MCPサーバー</div>
+      <div class="arrow">⇄</div>
+      <div class="box">外部サービス</div>
+    </div>
+
+    <h2>Skillsとの役割分担</h2>
+    <p>MCPが「何にアクセスできるか」を提供し、Skillsが「それをどう処理するか」を定義する。たとえばMCPでGitHubの差分を取得し、Skillsに書いたチェックリストでレビューする、という組み合わせ方が一般的。</p>
+    <ul>
+      <li>ChatGPTでは「コネクタ」「Apps」という名称で同じ仕組みが提供されている</li>
+      <li>対応しているAIアプリはClaude、ChatGPT、Cursor、VS Codeなど多数</li>
+    </ul>
+    <div class="footer-note">参考：modelcontextprotocol.io、Anthropic／OpenAI公式ドキュメント</div>
+  </section>
+
+  <!-- 4 -->
+  <section class="slide" data-time="2分">
+    <div class="num">04</div>
+    <div class="time-badge">2分</div>
+    <h1>ハーネス</h1>
+    <p class="lede">AIを安定して実務で使うための「実行環境＋安全装置」。Claude CodeやCodex CLIのような、ターミナルやIDEで動くエージェントツール全体を指す言葉。</p>
+
+    <div class="compare">
+      <div class="col">
+        <div class="tag">Claude Code</div>
+        <p>細かい制御が可能なフック機構で安全性を確保。長期のリファクタリングやコードレビューに強い。</p>
+      </div>
+      <div class="col">
+        <div class="tag">Codex CLI</div>
+        <p>OSレベルのサンドボックスで安全性を確保。境界が固く、クラウド実行と相性がよい。</p>
+      </div>
+      <div class="col">
+        <div class="tag">共通点</div>
+        <p>どちらもSkills相当の拡張ファイルを持ち、MCPで外部サービスに繋がる構造は同じ。</p>
+      </div>
+    </div>
+    <div class="footer-note">設計思想は異なるが、性能差より「運用設計の差」が結果を左右するという指摘が多い（2026年時点の業界記事より）</div>
+  </section>
+
+  <!-- 5 -->
+  <section class="slide" data-time="1.5分">
+    <div class="num">05</div>
+    <div class="time-badge">1.5分</div>
+    <h1>プロンプトの基本原則</h1>
+    <p class="lede">曖昧な指示は曖昧な答えを返す。Skills・MCP・ハーネスより前に効く、最も投資対効果が高い基本動作。</p>
+    <div class="grid-list">
+      <div class="item">
+        <div class="h">役割を指定する</div>
+        <div class="d">「編集者として」「初心者向けに」など、立場を渡すと答えの質が揃う</div>
+      </div>
+      <div class="item">
+        <div class="h">条件を渡す</div>
+        <div class="d">対象者・前提知識・避けたい表現などを先に伝える</div>
+      </div>
+      <div class="item">
+        <div class="h">出力形式を指定する</div>
+        <div class="d">表で／箇条書きで／何文字以内で、と形を決める</div>
+      </div>
+      <div class="item">
+        <div class="h">ステップで考えさせる</div>
+        <div class="d">複雑な作業は「まず分解して」と一段挟むと精度が上がる</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="slide" data-time="1.5分">
+    <div class="num">06</div>
+    <div class="time-badge">1.5分</div>
+    <h1>チャットの構造化機能</h1>
+    <p class="lede">Skillsの「個人用・簡易版」にあたる機能。毎回同じ前提を書き直さなくて済む。</p>
+    <div class="compare">
+      <div class="col">
+        <div class="tag">Claude</div>
+        <p>Projects機能で、特定の話題用の会話スペースとカスタム指示をまとめて持てる</p>
+      </div>
+      <div class="col">
+        <div class="tag">ChatGPT</div>
+        <p>Custom InstructionsとProjects機能で同様のことができる</p>
+      </div>
+      <div class="col">
+        <div class="tag">Skillsとの違い</div>
+        <p>Skillsはファイル単位で配布・共有できる。構造化機能は個人の会話設定に近い</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section class="slide" data-time="1分">
+    <div class="num">07</div>
+    <div class="time-badge">1分</div>
+    <h1>メモリ機能</h1>
+    <p class="lede">会話を超えて、好みや過去のやり取りを覚えておく機能。</p>
+    <div class="card">
+      <div class="label">Skillsとの違い</div>
+      <p>Skillsは「作業のやり方」を教える仕組み。メモリは「あなた個人の情報」を覚える仕組み。役割が違うので混同しないことが大事。</p>
+    </div>
+  </section>
+
+  <!-- 8 -->
+  <section class="slide" data-time="1.5分">
+    <div class="num">08</div>
+    <div class="time-badge">1.5分</div>
+    <h1>エージェント的機能の使い分け</h1>
+    <p class="lede">「調べて」「実行して」「作って」、それぞれ投げる先の機能が違う。</p>
+    <div class="grid-list">
+      <div class="item">
+        <div class="h">調べてほしいとき</div>
+        <div class="d">Deep Research・Web検索機能</div>
+      </div>
+      <div class="item">
+        <div class="h">実行してほしいとき</div>
+        <div class="d">Agent mode・Computer use系の機能</div>
+      </div>
+      <div class="item">
+        <div class="h">作ってほしいとき</div>
+        <div class="d">Skills・コード実行機能</div>
+      </div>
+      <div class="item">
+        <div class="h">繋いでほしいとき</div>
+        <div class="d">MCP・コネクタ</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 -->
+  <section class="slide" data-time="1.5分">
+    <div class="num">09</div>
+    <div class="time-badge">1.5分</div>
+    <h1>コスト構造の理解</h1>
+    <p class="lede">サブスクとAPIは別の財布。重い処理は別枠で消費されることが多い。</p>
+    <ul>
+      <li>通常のチャット利用は、月額サブスクの範囲内で収まることが多い</li>
+      <li>自動化（API経由・夜間の自動実行など）は、別途トークン単位の課金になりやすい</li>
+      <li>「無料に見える機能」も、裏側で使っているモデルやツールによって負荷が変わる</li>
+    </ul>
+    <div class="card">
+      <div class="label">今日から使えるアクション</div>
+      <p>① プロンプトに役割・条件・出力形式を入れる　② よく使う前提はProjects／カスタム指示に保存する　③ 「繋ぐ・調べる・実行する」を分けて考える</p>
+    </div>
+  </section>
+
+</div>
+
+<div class="nav">
+  <button id="prevBtn" onclick="changeSlide(-1)">← 前へ</button>
+  <div class="counter" id="counterLabel">1 / 9</div>
+  <button id="nextBtn" onclick="changeSlide(1)">次へ →</button>
+</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+
+  function render(){
+    slides.forEach((s,i)=> s.classList.toggle('active', i===current));
+    document.getElementById('counterLabel').textContent = (current+1) + ' / ' + total;
+    document.getElementById('clockLabel').textContent =
+      String(current+1).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
+    document.getElementById('progressFill').style.width = ((current+1)/total*100) + '%';
+    document.getElementById('prevBtn').disabled = (current===0);
+    document.getElementById('nextBtn').disabled = (current===total-1);
+  }
+
+  function changeSlide(delta){
+    const next = current + delta;
+    if(next>=0 && next<total){
+      current = next;
+      render();
+    }
+  }
+
+  document.addEventListener('keydown', (e)=>{
+    if(e.key==='ArrowRight') changeSlide(1);
+    if(e.key==='ArrowLeft') changeSlide(-1);
+  });
+
+  render();
+</script>
+
+</body>
+</html>
